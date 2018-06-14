@@ -40,8 +40,8 @@ main:Constant.o DoubleOperator.o main.o Node.o Placeholder.o SingleOperator.o Te
 	$(CC) $(CFLAGS)  $^ -o $@
 
 clean:
-	-del *.o main.exe
-	-rm *.o main
+	rm *.o main
+
 
 main.zip:
 	#make clean

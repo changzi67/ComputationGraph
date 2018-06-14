@@ -31,3 +31,4 @@ double Solve(const vector<double>& facts, double init) {//facts 为多项式系�
 	}while(abs(cur-prev)>eps);
 	return cur;
 }
+

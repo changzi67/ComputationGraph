@@ -190,3 +190,39 @@ void Pow::Release()
 		value=nullptr;
 	}
 }
+
+
+Tensor Less::eval(std::map<std::string,Tensor>& Inputs)
+{
+	if(value==nullptr)
+	{
+		Tensor A=a->eval(Inputs);
+		Tensor B=b->eval(Inputs);
+		//Judge(A,B);
+		value=new Tensor(A<B);
+		if(debug)
+		{
+			std::cout<<"Print Operator:"<<name<<"("<<value->PrintType()<<")="<<Expr()<<'\n';
+			std::cout<<value->Print()<<'\n';
+		}	
+	}
+	return *value;
+}
+
+void Less::grad(std::map<Node*, std::multiset<Node*>>& grads, Node& t)
+{
+	//emmmm……暂时不知道咋整
+	//单位冲激是对的然而炼丹的时候也没用
+	//就当它是零吧
+}
+
+void Less::Release()
+{
+	a->Release();
+	b->Release();
+	if(value!=nullptr)
+	{
+		delete value;
+		value=nullptr;
+	}
+}
