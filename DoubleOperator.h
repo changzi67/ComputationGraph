@@ -193,4 +193,5 @@ inline Pow& operator ^(Node& A,Node& B)
 	Pow* tmp=new Pow(A,B);
 	return *tmp;
 }
+
 #endif
