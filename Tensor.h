@@ -82,6 +82,26 @@ public:
 		return value;
 	}
 
+	bool operator <(const Tensor &b) const{
+		if(ismat||b.ismat)
+			throw std::runtime_error("Error : Try to convert to double from Tensor(matrix)!");
+		return value < b.value;
+	}
+
+	bool operator >(const Tensor &b) const{
+		if(ismat||b.ismat)
+			throw std::runtime_error("Error : Try to convert to double from Tensor(matrix)!");
+		return value > b.value;
+	}
+
+	bool operator <= (const Tensor &b) const{
+		return !(*this>b);
+	}
+
+	bool operator >= (const Tensor &b) const{
+		return !(*this<b);
+	}
+
 	bool Type()const{return ismat;}
 	double Value()const;
 	double** Matrix()const;

@@ -237,8 +237,13 @@ Tensor ln(const Tensor& a)
 		for(int i=0;i<ans.n;i++)
 			for(int j=0;j<ans.m;j++)
 				ans.matrix[i][j]=log(a.matrix[i][j]);
-	}else
+	}
+	else
+	{
+		if (a.value <= 0)
+			std::cout << "log operator's input must be positive." << std::endl;
 		ans.value=log(a.value);
+	}
 	return ans;
 }
 

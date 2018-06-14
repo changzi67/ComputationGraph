@@ -1,5 +1,6 @@
 #ifndef DOUBLEOPERATOR
 #include "Node.h"
+#include "Variable.h"
 #define DOUBLEOPERATOR  
 class Add:public Node
 {
@@ -46,6 +47,8 @@ public:
 	Sub(Node &_a,Node &_b,const std::string& _nm=""):Node(_nm),a(&_a),b(&_b){}
 	
 	Sub(const Sub &t)=default;
+
+	void grad(std::map<Node*, std::multiset<Node*>>&, Node&) override;
 	
 	Sub(Sub &&t):Node(t.name,t.value)
 	{
@@ -109,6 +112,8 @@ public:
 	Div(Node &_a,Node &_b,const std::string& _nm=""):Node(_nm),a(&_a),b(&_b){}
 	
 	Div(const Div &t)=default;
+
+	void grad(std::map<Node*, std::multiset<Node*>>&, Node&) override;
 	
 	Div(Div &&t):Node(t.name,t.value)
 	{
@@ -141,6 +146,8 @@ public:
 	Pow(Node &_a,Node &_b,const std::string &_nm=""):Node(_nm),a(&_a),b(&_b){}
 	
 	Pow(const Pow &t)=default;
+
+	void grad(std::map<Node*, std::multiset<Node*>>&, Node&) override {};
 	
 	Pow(Pow &&t):Node(t.name,t.value)
 	{
@@ -164,7 +171,124 @@ public:
 	}
 };
 
-inline Add& operator +(Node& A,Node& B)
+class Less:public Node
+{
+private:
+	Node *a,*b;
+	//void Judge(const Tensor&,const Tensor&)const; 
+	Tensor eval(std::map<std::string,Tensor>&);
+	void Release(); 
+public:
+	Less(Node &_a,Node &_b,const std::string& _nm=""):Node(_nm),a(&_a),b(&_b){}
+	Less(const Less &t)=default;
+	
+	Less(Less &&t):Node(t.name,t.value)
+	{
+		a=t.a;b=t.b;
+		debug=t.debug;
+		t.a=t.b=nullptr;
+		t.value=nullptr;
+	}
+
+    void grad(std::map<Node*, std::multiset<Node*>>&, Node&) override;
+
+	std::string Expr()
+	{
+		return "("+a->Expr()+"<"+b->Expr()+")";
+	}
+	
+	void Rely(std::set<std::string>& lib)
+	{
+		a->Rely(lib);
+		b->Rely(lib);
+	}
+	
+};
+
+class LessEq:public Node
+{
+private:
+	Node *a,*b;
+	//void Judge(const Tensor&,const Tensor&)const; 
+	Tensor eval(std::map<std::string,Tensor>&);
+	void Release(); 
+public:
+	LessEq(Node &_a,Node &_b,const std::string& _nm=""):Node(_nm),a(&_a),b(&_b){}
+	LessEq(const LessEq &t)=default;
+	
+	LessEq(LessEq &&t):Node(t.name,t.value)
+	{
+		a=t.a;b=t.b;
+		debug=t.debug;
+		t.a=t.b=nullptr;
+		t.value=nullptr;
+	}
+
+    void grad(std::map<Node*, std::multiset<Node*>>&, Node&) override;
+
+	std::string Expr()
+	{
+		return "("+a->Expr()+"<="+b->Expr()+")";
+	}
+	
+	void Rely(std::set<std::string>& lib)
+	{
+		a->Rely(lib);
+		b->Rely(lib);
+	}
+	
+};
+
+class Assign :public Node
+{
+private:
+	Variable *a;
+	Node *b;
+	Tensor eval(std::map<std::string,Tensor>&) override;
+public:
+	Assign(Variable &_a,Node &_b,const std::string& _nm=""):Node(_nm),a(&_a),b(&_b){}
+	Assign(const Assign &t)=default;
+	void grad(std::map<Node*, std::multiset<Node*>>&, Node&) override;
+	
+	void Release() override;
+	std::string Expr() override
+	{
+		return "Assign( "+ a->Expr() +"<-" + b->Expr()+")";
+	}
+
+	void Rely(std::set<std::string>& lib) override
+	{
+		a->Rely(lib);
+		b->Rely(lib);
+	}
+};
+
+class Bind :public Node
+{
+private:
+	Node *a;
+	Node *b;
+	Tensor eval(std::map<std::string,Tensor>&) override;
+public:
+	Bind(Node &_a,Node &_b,const std::string& _nm=""):Node(_nm),a(&_a),b(&_b){}
+	Bind(const Bind &t)=default;
+	void grad(std::map<Node*, std::multiset<Node*>>&, Node&) override;
+	
+	void Release() override;
+	std::string Expr() override
+	{
+		return "Bind (" + a->Expr()+ ","+ b->Expr() +")";
+	}
+
+	void Rely(std::set<std::string>& lib) override
+	{
+		a->Rely(lib);
+		b->Rely(lib);
+	}
+
+};
+
+inline Add& operator +(Node& A, Node& B)
 {
 	Add* tmp=new Add(A,B);
 	return *tmp;
@@ -193,5 +317,26 @@ inline Pow& operator ^(Node& A,Node& B)
 	Pow* tmp=new Pow(A,B);
 	return *tmp;
 }
+
+inline Less& operator <(Node& A, Node& B)
+{
+	return *(new Less(A,B));
+}
+
+inline Less& operator >(Node& A, Node& B)
+{
+	return *(new Less(B,A));
+}
+
+inline LessEq& operator <=(Node& A, Node& B)
+{
+	return *(new LessEq(A,B));
+}
+
+inline LessEq& operator >=(Node& A, Node& B)
+{
+	return *(new LessEq(B,A));
+}
+
 
 #endif

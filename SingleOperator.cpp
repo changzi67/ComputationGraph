@@ -1,4 +1,6 @@
 #include "SingleOperator.h"
+#include "Constant.h"
+#include "DoubleOperator.h"
 
 Node& Gra::operator[](Node &graded) {
 	if (grads.find(&graded) == grads.end())
@@ -49,3 +51,34 @@ Tensor* Transpose::calc(const Tensor& A)
 	return tmp;
 }
 
+Tensor* Assert::calc(const Tensor& A)
+{
+	if(A<=Tensor(0))
+		std::cout<<"Error: Assertion failed"<<std::endl;
+	return new Tensor(0);
+}
+
+void Ln::grad(std::map<Node *, std::multiset<Node *>> & grads, Node & t) {
+	Node * temp = new Constant(1);
+	grads[a].insert(&(t * (*temp / *a)));
+	a->grad(grads, t * (*temp / *a));
+}
+
+void Sin::grad(std::map<Node *, std::multiset<Node *>> & grads, Node & t) {
+	Node * temp = new Cos(*a);
+	grads[a].insert(&(t * *temp));
+	a->grad(grads, t * *temp);
+}
+
+void Cos::grad(std::map<Node *, std::multiset<Node *>> & grads, Node & t) {
+	Node * temp1 = new Sin(*a);
+	Node * temp2 = new Constant(-1);
+	grads[a].insert(&(t * *temp1 * *temp2));
+	a->grad(grads, t * *temp1 * *temp2);
+}
+
+void Exp::grad(std::map<Node *, std::multiset<Node *>> & grads, Node & t) {
+	Node * temp = new Exp(*a);
+	grads[a].insert(&(t * *temp));
+	a->grad(grads, t * *temp);
+}
