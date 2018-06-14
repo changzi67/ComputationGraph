@@ -42,6 +42,7 @@ class Exp:public SingleOperator
 private:
 	Tensor* calc(const Tensor& A){return new Tensor(exp(A));}
 public:
+	void grad(std::map<Node*, std::multiset<Node*>>&, Node&) override;
 	Exp(Node &_a,const std::string& _nm=""):SingleOperator(_nm,_a){}
 	
 	std::string Expr()
@@ -53,8 +54,10 @@ public:
 class Ln:public SingleOperator
 {
 private:
-	Tensor* calc(const Tensor& A){return new Tensor(ln(A));}
+	Tensor* calc(const Tensor& A) { return new Tensor(ln(A)); }
 public:
+
+	void grad(std::map<Node*, std::multiset<Node*>>&, Node&) override;
 	Ln(Node &_a,const std::string& _nm=""):SingleOperator(_nm,_a){}
 	
 	std::string Expr()
@@ -68,6 +71,8 @@ class Sin:public SingleOperator
 private:
 	Tensor* calc(const Tensor& A){return new Tensor(sin(A));}
 public:
+
+	void grad(std::map<Node*, std::multiset<Node*>>&, Node&) override;
 	Sin(Node &_a,const std::string& _nm=""):SingleOperator(_nm,_a){}
 	
 	std::string Expr()
@@ -81,6 +86,8 @@ class Cos:public SingleOperator
 private:
 	Tensor* calc(const Tensor& A){return new Tensor(cos(A));}
 public:
+
+	void grad(std::map<Node*, std::multiset<Node*>>&, Node&) override;
 	Cos(Node &_a,const std::string& _nm=""):SingleOperator(_nm,_a){}
 	
 	std::string Expr()

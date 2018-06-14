@@ -46,6 +46,16 @@ void Add::Release()
 }
 
 //Sub
+
+void Sub::grad(std::map<Node *, std::multiset<Node *>> & grads, Node & t) {
+	Node * temp = new Constant(-1);
+	grads[a].insert(&t);
+	grads[b].insert(&(*temp * t));
+
+	a->grad(grads, t);
+	b->grad(grads, *temp * t);
+}
+
 void Sub::Judge(const Tensor& A,const Tensor& B) 
 {
 	if(A.Type()!=B.Type()||(A.Type()&&(A.N()!=B.N()||A.M()!=B.M())))
@@ -123,6 +133,16 @@ void Mul::Release()
 	}
 }
 //Div
+
+void Div::grad(std::map<Node *, std::multiset<Node *>> & grads, Node & t) {
+	Node * temp1 = new Constant(1);
+	Node * temp2 = new Constant(-1);
+	grads[a].insert(&(t * (*temp1 / *b)));
+	grads[b].insert(&(t * (*a * *temp2 / *b / *b)));
+	a->grad(grads, t * (*temp1 / *b));
+	b->grad(grads, t * (*a * *temp2 / *b / *b));
+}
+
 void Div::Judge(const Tensor& A,const Tensor& B) 
 {
 	if(B.Type())
@@ -181,42 +201,6 @@ Tensor Pow::eval(std::map<std::string,Tensor>& Inputs)
 }
 
 void Pow::Release()
-{
-	a->Release();
-	b->Release();
-	if(value!=nullptr)
-	{
-		delete value;
-		value=nullptr;
-	}
-}
-
-
-Tensor Less::eval(std::map<std::string,Tensor>& Inputs)
-{
-	if(value==nullptr)
-	{
-		Tensor A=a->eval(Inputs);
-		Tensor B=b->eval(Inputs);
-		//Judge(A,B);
-		value=new Tensor(A<B);
-		if(debug)
-		{
-			std::cout<<"Print Operator:"<<name<<"("<<value->PrintType()<<")="<<Expr()<<'\n';
-			std::cout<<value->Print()<<'\n';
-		}	
-	}
-	return *value;
-}
-
-void Less::grad(std::map<Node*, std::multiset<Node*>>& grads, Node& t)
-{
-	//emmmm……暂时不知道咋整
-	//单位冲激是对的然而炼丹的时候也没用
-	//就当它是零吧
-}
-
-void Less::Release()
 {
 	a->Release();
 	b->Release();
