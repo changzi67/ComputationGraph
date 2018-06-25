@@ -6,7 +6,7 @@ class SingleOperator:public Node
 protected:
 	Node *a;
 	virtual Tensor* calc(const Tensor&)=0;
-	Tensor eval(std::map<std::string,Tensor>&);
+	Tensor eval(std::map<std::string,Tensor>&, Session& sess);
 	void Release()
 	{
 		a->Release();

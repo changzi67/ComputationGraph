@@ -4,13 +4,14 @@
 class Variable:public Node
 {
 private:
-	Tensor eval(std::map<std::string,Tensor>&);
+	Session* sess;
+	Tensor eval(std::map<std::string,Tensor>&, Session& s) override;
 	void Release(){}
 public:
 	virtual void grad(std::map<Node, std::multiset<Node&>>, Node&) {}
-	Variable(const Tensor& _t,const std::string& _nm=""):Node(_nm,new Tensor(_t)){}
-	Variable(const std::string& _nm=""):Node(_nm,new Tensor()){}
-	Variable(const int& n,const int& m,const std::string& _nm=""):Node(_nm,new Tensor(n,m)){}
+	Variable(const Tensor& _t, Session& s = root, const std::string& _nm="");
+	Variable( Session& s = root, const std::string& _nm="");
+	Variable(const int& n,const int& m, Session& s = root, const std::string& _nm="");
 	
 	std::string Expr()
 	{
@@ -19,9 +20,9 @@ public:
 
 	void grad (Node * Graded) {}
 	void Rely(std::set<std::string>& lib){}
-	void Set(const Tensor& t);
-	void Add(const Tensor& t);
-	void Sub(const Tensor& t);
+	void Set(const Tensor& t);   // 默认加减乘除在构造时的session下
+	void Add(const Tensor& t);   // 但实际上一个Variable可在多个Session中取不同值
+	void Sub(const Tensor& t);   // 比如可以构建 y (1, s1);之后 y.Set(2, s2)
 	void Mul(const Tensor& t);
 	void Div(const Tensor &t);
 	Variable& operator +=(const Tensor &t){Add(t);return *this;}
@@ -29,7 +30,7 @@ public:
 	Variable& operator *=(const Tensor &t){Mul(t);return *this;}
 	Variable& operator /=(const Tensor &t){Div(t);return *this;}
 	
-	Tensor Value(){return *value;}
+	Tensor Value(Session& s = root);
 };
 
 #endif

@@ -7,7 +7,7 @@ class Placeholder:public Node
 private:
 	int n,m;
 	bool ismat;
-	Tensor eval(std::map<std::string,Tensor>&);
+	Tensor eval(std::map<std::string,Tensor>&, Session& sess);
 	
 	void Release()
 	{

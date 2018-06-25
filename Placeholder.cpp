@@ -1,6 +1,6 @@
 #include "Placeholder.h" 
 
-Tensor Placeholder::eval(std::map<std::string,Tensor>& Inputs)
+Tensor Placeholder::eval(std::map<std::string,Tensor>& Inputs, Session& sess)
 {
 	if(value==nullptr)
 	{

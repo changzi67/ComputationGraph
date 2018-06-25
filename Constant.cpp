@@ -1,6 +1,6 @@
 #include "Constant.h"
 
-Tensor Constant::eval(std::map<std::string,Tensor>&Inputs) {
+Tensor Constant::eval(std::map<std::string,Tensor>&Inputs, Session& sess) {
 	if(debug)
 	{
 		std::cout<<"Print Operator:"<<name<<"("<<value->PrintType()<<")="<<Expr()<<'\n';

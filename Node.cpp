@@ -44,14 +44,14 @@ Gra& Node::Grad()
 	return *t;
 }
 
-Tensor Node::Eval(std::map<std::string,Tensor>&Inputs)
+Tensor Node::Eval(std::map<std::string,Tensor>&Inputs, Session& s)
 {
-	Tensor ans=eval(Inputs);
+	Tensor ans=eval(Inputs, s);
 	Release();
 	return ans;
 }
 
-Tensor Node::Eval(const std::initializer_list<std::pair<std::string,Tensor>>& il)
+Tensor Node::Eval(const std::initializer_list<std::pair<std::string,Tensor>>& il, Session& s)
 {
 	std::map<std::string,Tensor> Inputs;
 	for(auto it=il.begin();it!=il.end();it++)
@@ -60,5 +60,5 @@ Tensor Node::Eval(const std::initializer_list<std::pair<std::string,Tensor>>& il
 			throw std::invalid_argument("Error : Redeclaration in inputs!");
 		Inputs[it->first]=it->second;
 	}
-	return Eval(Inputs);
+	return Eval(Inputs, s);
 }

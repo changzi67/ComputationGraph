@@ -13,11 +13,11 @@ Node& Gra::operator[](Node &graded) {
 	}
 }
 
-Tensor SingleOperator::eval(std::map<std::string,Tensor>& Inputs)
+Tensor SingleOperator::eval(std::map<std::string,Tensor>& Inputs, Session& sess)
 {
 	if(value==nullptr)
 	{
-		Tensor A=a->eval(Inputs);
+		Tensor A=a->eval(Inputs, sess);
 		value=calc(A);
 		if(debug)
 		{

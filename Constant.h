@@ -6,7 +6,7 @@
 class Constant:public Node
 {
 private:
-	Tensor eval(std::map<std::string,Tensor>&); 
+	Tensor eval(std::map<std::string,Tensor>&, Session& sess);
 	void Release(){} 
 public:
 	Constant(const Tensor& _t,const std::string& _nm=""):Node(_nm,new Tensor(_t)){}

@@ -8,12 +8,12 @@ void Add::Judge(const Tensor& A,const Tensor& B)const
 		throw std::invalid_argument("Error : Add node \""+name+"\" try to get value from "+a->Name()+"("+A.PrintType()+") and "+b->Name()+"("+B.PrintType()+") !");
 }
 
-Tensor Add::eval(std::map<std::string,Tensor>& Inputs)
+Tensor Add::eval(std::map<std::string,Tensor>& Inputs, Session& sess)
 {
 	if(value==nullptr)
 	{
-		Tensor A=a->eval(Inputs);
-		Tensor B=b->eval(Inputs);
+		Tensor A=a->eval(Inputs, sess);
+		Tensor B=b->eval(Inputs, sess);
 		Judge(A,B);
 		value=new Tensor(A+B);
 		if(debug)
@@ -62,12 +62,12 @@ void Sub::Judge(const Tensor& A,const Tensor& B)
 		throw std::invalid_argument("Error : Sub node \""+name+"\" try to get value from "+a->Name()+"("+A.PrintType()+") and "+b->Name()+"("+B.PrintType()+") !");
 }
 
-Tensor Sub::eval(std::map<std::string,Tensor>& Inputs)
+Tensor Sub::eval(std::map<std::string,Tensor>& Inputs, Session& sess)
 {
 	if(value==nullptr)
 	{
-		Tensor A=a->eval(Inputs);
-		Tensor B=b->eval(Inputs);
+		Tensor A=a->eval(Inputs, sess);
+		Tensor B=b->eval(Inputs, sess);
 		Judge(A,B);
 		value=new Tensor(A-B);
 		if(debug)
@@ -105,12 +105,12 @@ void Mul::Judge(const Tensor& A,const Tensor& B)
 		throw std::invalid_argument("Error : Mul node \""+name+"\" try to get value from "+a->Name()+"("+A.PrintType()+") and "+b->Name()+"("+B.PrintType()+") !");
 }
 
-Tensor Mul::eval(std::map<std::string,Tensor>& Inputs)
+Tensor Mul::eval(std::map<std::string,Tensor>& Inputs, Session& sess)
 {
 	if(value==nullptr)
 	{
-		Tensor A=a->eval(Inputs);
-		Tensor B=b->eval(Inputs);
+		Tensor A=a->eval(Inputs, sess);
+		Tensor B=b->eval(Inputs, sess);
 		Judge(A,B);
 		value=new Tensor(A*B);
 		if(debug)
@@ -149,12 +149,12 @@ void Div::Judge(const Tensor& A,const Tensor& B)
 		throw std::invalid_argument("Error : Div node \""+name+"\" try to get value from "+a->Name()+"("+A.PrintType()+") and "+b->Name()+"("+B.PrintType()+") !");
 }
 
-Tensor Div::eval(std::map<std::string,Tensor>& Inputs)
+Tensor Div::eval(std::map<std::string,Tensor>& Inputs, Session& sess)
 {
 	if(value==nullptr)
 	{
-		Tensor A=a->eval(Inputs);
-		Tensor B=b->eval(Inputs);
+		Tensor A=a->eval(Inputs, sess);
+		Tensor B=b->eval(Inputs, sess);
 		Judge(A,B);
 		value=new Tensor(A/B);
 		if(debug)
@@ -183,12 +183,12 @@ void Pow::Judge(const Tensor& A,const Tensor& B)
 		throw std::invalid_argument("Error : Pow node \""+name+"\" try to get value from "+a->Name()+"("+A.PrintType()+") and "+b->Name()+"("+B.PrintType()+") !");
 }
 
-Tensor Pow::eval(std::map<std::string,Tensor>& Inputs)
+Tensor Pow::eval(std::map<std::string,Tensor>& Inputs, Session& sess)
 {
 	if(value==nullptr)
 	{
-		Tensor A=a->eval(Inputs);
-		Tensor B=b->eval(Inputs);
+		Tensor A=a->eval(Inputs, sess);
+		Tensor B=b->eval(Inputs, sess);
 		Judge(A,B);
 		value=new Tensor(pow(A,B));
 		if(debug)
@@ -211,12 +211,12 @@ void Pow::Release()
 	}
 }
 
-Tensor Less::eval(std::map<std::string,Tensor>& Inputs)
+Tensor Less::eval(std::map<std::string,Tensor>& Inputs, Session& sess)
 {
 	if(value==nullptr)
 	{
-		Tensor A=a->eval(Inputs);
-		Tensor B=b->eval(Inputs);
+		Tensor A=a->eval(Inputs, sess);
+		Tensor B=b->eval(Inputs, sess);
 		//Judge(A,B);
 		value=new Tensor(A<B);
 		if(debug)
@@ -246,12 +246,12 @@ void Less::Release()
 	}
 }
 
-Tensor LessEq::eval(std::map<std::string,Tensor>& Inputs)
+Tensor LessEq::eval(std::map<std::string,Tensor>& Inputs, Session& sess)
 {
 	if(value==nullptr)
 	{
-		Tensor A=a->eval(Inputs);
-		Tensor B=b->eval(Inputs);
+		Tensor A=a->eval(Inputs, sess);
+		Tensor B=b->eval(Inputs, sess);
 		//Judge(A,B);
 		value=new Tensor(A<=B);
 		if(debug)
@@ -281,9 +281,9 @@ void LessEq::Release()
 	}
 }
 
-Tensor Assign::eval (std::map<std::string, Tensor> & Inputs) {
+Tensor Assign::eval (std::map<std::string, Tensor> & Inputs, Session& sess) {
 	if(value!=nullptr){
-		Tensor B=b->eval(Inputs);
+		Tensor B=b->eval(Inputs, sess);
 		value=new Tensor(B);
 	}
 	return *value;
@@ -304,10 +304,10 @@ void Assign::grad(std::map<Node *, std::multiset<Node *>> & grads, Node & t) {
 	b->grad(grads, t);
 }
 
-Tensor Bind::eval (std::map<std::string, Tensor> & Inputs) {
+Tensor Bind::eval (std::map<std::string, Tensor> & Inputs, Session& sess) {
 	if(value==nullptr){
-		Tensor A=a->eval(Inputs);
-		b->eval(Inputs);
+		Tensor A=a->eval(Inputs, sess);
+		b->eval(Inputs, sess);
 		value=new Tensor(A);
 	}
 	return *value;

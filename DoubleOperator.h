@@ -7,7 +7,7 @@ class Add:public Node
 private:
 	Node *a,*b;
 	void Judge(const Tensor&,const Tensor&)const; 
-	Tensor eval(std::map<std::string,Tensor>&);
+	Tensor eval(std::map<std::string,Tensor>&, Session& sess) override;
 	void Release(); 
 public:
 	Add(Node &_a,Node &_b,const std::string& _nm=""):Node(_nm),a(&_a),b(&_b){}
@@ -41,7 +41,7 @@ class Sub:public Node
 private:
 	Node *a,*b;
 	void Judge(const Tensor& ,const Tensor& );
-	Tensor eval(std::map<std::string,Tensor>&);
+	Tensor eval(std::map<std::string,Tensor>&, Session& sess);
 	void Release();
 public:
 	Sub(Node &_a,Node &_b,const std::string& _nm=""):Node(_nm),a(&_a),b(&_b){}
@@ -76,7 +76,7 @@ class Mul:public Node
 private:
 	Node *a,*b;
 	void Judge(const Tensor& ,const Tensor&);
-	Tensor eval(std::map<std::string,Tensor>&);
+	Tensor eval(std::map<std::string,Tensor>&, Session& sess);
 	void Release();
 public:
 	Mul(Node &_a,Node &_b,const std::string& _nm=""):Node(_nm),a(&_a),b(&_b){}
@@ -106,7 +106,7 @@ class Div:public Node
 private:
 	Node *a,*b;
 	void Judge(const Tensor&,const Tensor&);
-	Tensor eval(std::map<std::string,Tensor>& Inputs);
+	Tensor eval(std::map<std::string,Tensor>& Inputs, Session& sess);
 	void Release();
 public:
 	Div(Node &_a,Node &_b,const std::string& _nm=""):Node(_nm),a(&_a),b(&_b){}
@@ -140,7 +140,7 @@ class Pow:public Node
 private:
 	Node *a,*b;
 	void Judge(const Tensor&,const Tensor&);
-	Tensor eval(std::map<std::string,Tensor>&);
+	Tensor eval(std::map<std::string,Tensor>&, Session& sess);
 	void Release();
 public:
 	Pow(Node &_a,Node &_b,const std::string &_nm=""):Node(_nm),a(&_a),b(&_b){}
@@ -176,7 +176,7 @@ class Less:public Node
 private:
 	Node *a,*b;
 	//void Judge(const Tensor&,const Tensor&)const; 
-	Tensor eval(std::map<std::string,Tensor>&);
+	Tensor eval(std::map<std::string,Tensor>&, Session& sess);
 	void Release(); 
 public:
 	Less(Node &_a,Node &_b,const std::string& _nm=""):Node(_nm),a(&_a),b(&_b){}
@@ -210,7 +210,7 @@ class LessEq:public Node
 private:
 	Node *a,*b;
 	//void Judge(const Tensor&,const Tensor&)const; 
-	Tensor eval(std::map<std::string,Tensor>&);
+	Tensor eval(std::map<std::string,Tensor>&, Session& sess);
 	void Release(); 
 public:
 	LessEq(Node &_a,Node &_b,const std::string& _nm=""):Node(_nm),a(&_a),b(&_b){}
@@ -244,7 +244,7 @@ class Assign :public Node
 private:
 	Variable *a;
 	Node *b;
-	Tensor eval(std::map<std::string,Tensor>&) override;
+	Tensor eval(std::map<std::string,Tensor>&, Session&) override;
 public:
 	Assign(Variable &_a,Node &_b,const std::string& _nm=""):Node(_nm),a(&_a),b(&_b){}
 	Assign(const Assign &t)=default;
@@ -268,7 +268,7 @@ class Bind :public Node
 private:
 	Node *a;
 	Node *b;
-	Tensor eval(std::map<std::string,Tensor>&) override;
+	Tensor eval(std::map<std::string,Tensor>&, Session&) override;
 public:
 	Bind(Node &_a,Node &_b,const std::string& _nm=""):Node(_nm),a(&_a),b(&_b){}
 	Bind(const Bind &t)=default;

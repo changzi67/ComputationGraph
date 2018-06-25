@@ -5,45 +5,55 @@ CFLAGS = -std=c++11 -g
 LDFLAGS =
 
 # Phony targets
-.PHONY: all clean
+.PHONY: all clean FORCE
 
 all:main
+#	@echo "Build Success!"
 
-Constant.o: Constant.cpp Constant.h Node.h Tensor.h
+Constant.o: Constant.cpp Constant.h Node.h Tensor.h Session.h
 	$(CC) $< -c -o $@  $(CFLAGS)
 
 DoubleOperator.o: DoubleOperator.cpp DoubleOperator.h Node.h Tensor.h \
- Constant.h Meow.h SingleOperator.h Variable.h Placeholder.h
+ Session.h Variable.h Constant.h Meow.h SingleOperator.h Placeholder.h
 	$(CC) $< -c -o $@  $(CFLAGS)
 
-main.o: main.cpp Meow.h Constant.h Node.h Tensor.h DoubleOperator.h \
- SingleOperator.h Variable.h Placeholder.h Newton.h
+LSM.o: LSM.cpp LSM.h Meow.h Constant.h Node.h Tensor.h Session.h \
+ DoubleOperator.h Variable.h SingleOperator.h Placeholder.h
 	$(CC) $< -c -o $@  $(CFLAGS)
 
-Node.o: Node.cpp Node.h Tensor.h Constant.h SingleOperator.h \
- DoubleOperator.h
+main.o: main.cpp Meow.h Constant.h Node.h Tensor.h Session.h \
+ DoubleOperator.h Variable.h SingleOperator.h Placeholder.h Newton.h
 	$(CC) $< -c -o $@  $(CFLAGS)
 
-Placeholder.o: Placeholder.cpp Placeholder.h Node.h Tensor.h
+Node.o: Node.cpp Node.h Tensor.h Session.h Constant.h SingleOperator.h \
+ DoubleOperator.h Variable.h
 	$(CC) $< -c -o $@  $(CFLAGS)
 
-SingleOperator.o: SingleOperator.cpp SingleOperator.h Node.h Tensor.h
+Placeholder.o: Placeholder.cpp Placeholder.h Node.h Tensor.h Session.h
+	$(CC) $< -c -o $@  $(CFLAGS)
+
+Session.o: Session.cpp Session.h Tensor.h
+	$(CC) $< -c -o $@  $(CFLAGS)
+
+SingleOperator.o: SingleOperator.cpp SingleOperator.h Node.h Tensor.h \
+ Session.h Constant.h DoubleOperator.h Variable.h
 	$(CC) $< -c -o $@  $(CFLAGS)
 
 Tensor.o: Tensor.cpp Tensor.h
 	$(CC) $< -c -o $@  $(CFLAGS)
 
-Variable.o: Variable.cpp Variable.h Node.h Tensor.h
+Variable.o: Variable.cpp Variable.h Node.h Tensor.h Session.h
 	$(CC) $< -c -o $@  $(CFLAGS)
 
-main:Constant.o DoubleOperator.o main.o Node.o Placeholder.o SingleOperator.o Tensor.o Variable.o 
+main:Constant.o DoubleOperator.o LSM.o main.o Node.o Placeholder.o Session.o SingleOperator.o Tensor.o Variable.o 
 	$(CC) $(CFLAGS)  $^ -o $@
 
+FORCE:
+
 clean:
-#	-del *.o main.exe
 	rm *.o main
 
-main.zip:
+main.zip: FORCE
 	#make clean
-	zip  *.cpp *.h Makefile -r main.zip
+	zip -r main.zip *.cpp *.h Readme.md *.docx Makefile 
 

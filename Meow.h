@@ -4,4 +4,5 @@
 #include "Variable.h"
 #include "Tensor.h"
 #include "Placeholder.h"
+#include "Session.h"
 
