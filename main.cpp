@@ -17,19 +17,18 @@ int main()
     y.Mul(3);
     std::cout << res.Eval({{"x", 1}}).Print() << '\n';
     y.Div(3);
-    std::cout << res.Eval({{"x", 1}}).Print() << '\n';*/
-
+    std::cout << res.Eval({{"x", 1}}).Print() << '\n';
+*/
     //样例二：正经的session
-    Session s1;
+/*    Session s1;
     Session s2;
     auto x = Placeholder("x");
     auto z = Variable(2, s2);
     auto y = Variable(1, s1);
     auto res = x + y;
     std::cout << res.Eval({{"x", 1}}, s1).Print() << '\n';
-    //y.Set(2);   默认为在创建时的Session执行；
-
-    s1.add(y, 1);  // 这是另一种接口(推荐)
+      //y.Set(2);   默认为在创建时的Session执行；
+  s1.add(y, 1);  // 这是另一种接口(推荐)
                    // 可以让一个Variable在多个Session中分别绑定不同的值
 
     std::cout << res.Eval({{"x", 1}}, s1).Print() << '\n';
@@ -52,9 +51,7 @@ int main()
     s1.Restore("save_net.cpkt");
     std::cout << res.Eval({{"x", 1}}, s1).Print() << '\n';
     return 0;
-
-
-
+*/
 
 	/*auto x = Placeholder("x");
 	auto y = Placeholder("y");
@@ -67,7 +64,7 @@ int main()
 	std::cout << res[x].Eval({{"x", 3}, {"y", 2}}).Print()<< std::endl;*/
 
 
-	//std::cout << Solve({1,0,3,2,1,1}) <<std::endl;
+	std::cout << Solve({1,0,3,2,1,1}) <<std::endl;
 
 	/*auto x = Placeholder("x");
 	auto y = Placeholder("y");
@@ -75,7 +72,7 @@ int main()
 	auto g = z.Grad();
 	std::cout << g[x].Eval({{"x", 3}, {"y", 2}}).Print()<< std::endl;*/
 
-	/*auto x = Placeholder("x");
+	auto x = Placeholder("x");
     auto y = Placeholder("y");
     auto z = Constant(3);
     auto z1 = Sin(z);
@@ -89,5 +86,5 @@ int main()
     auto test3 = x>z;
     std::cout << t.Eval({{"x", 1}, {"y", 0.01}}).Print()<< std::endl;
     std::cout << test2.Eval({{"x", 1}, {"y", 0.01}}).Print()<< std::endl;
-    return 0;*/
+    return 0;
 }

@@ -60,9 +60,9 @@ public:
 	virtual std::string Expr()=0;
 	virtual void Rely(std::set<std::string>&)=0;//����������ڵ� 
 	std::string PrintRely();
-	virtual Tensor eval(std::map<std::string,Tensor>&, Session&)=0;//��ֵ  //这里改了
+	virtual Tensor eval(std::map<std::string,Tensor>&, Session&)=0;//��ֵ
 	virtual void Release()=0;//�ͷű����ֵ 
-	Tensor Eval(std::map<std::string,Tensor>&, Session& = root);//ʹ��map    @队友_看到请删//  这里和下面也改了
+	Tensor Eval(std::map<std::string,Tensor>&, Session& = root);//ʹ��map
 	Tensor Eval(const std::initializer_list<std::pair<std::string,Tensor>>&, Session& = root);//ʹ�ó�ʼ���б�
 };
 #endif

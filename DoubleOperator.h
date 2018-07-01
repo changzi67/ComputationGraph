@@ -101,6 +101,39 @@ public:
 		b->Rely(lib);
 	}
 };
+
+// A中每一个元素分别乘B中对应元素，该类用于Sigmoid函数的求导
+class Dmul : public Node
+{
+private:
+	Node *a,*b;
+	Tensor eval(std::map<std::string,Tensor>& Inputs, Session& sess);
+	void Release() override;
+public:
+	Dmul(Node &_a,Node &_b,const std::string& _nm=""):Node(_nm),a(&_a),b(&_b){}
+
+	Dmul(const Dmul &t)=default;
+
+	Dmul(Dmul &&t):Node(t.name,t.value)
+	{
+		a=t.a;b=t.b;
+		debug=t.debug;
+		t.a=t.b=nullptr;
+		t.value=nullptr;
+	}
+
+	std::string Expr()
+	{
+		return "("+a->Expr()+"/*/"+b->Expr()+")";
+	}
+
+	void Rely(std::set<std::string>& lib)
+	{
+		a->Rely(lib);
+		b->Rely(lib);
+	}
+};
+
 class Div:public Node
 {
 private:

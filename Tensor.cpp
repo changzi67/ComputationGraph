@@ -35,29 +35,13 @@ Tensor& Tensor::operator =(const Tensor& a)
 
 Tensor& Tensor::operator+=(const Tensor& a)
 {
-	if(ismat!=a.ismat||(ismat&&(n!=a.n||m!=a.m)))
-		throw std::invalid_argument("Error : \""+PrintType()+"+="+a.PrintType()+"\" is not permitted!");
-	if(ismat)
-	{
-		for(int i=0;i<n;i++)
-			for(int j=0;j<m;j++)
-				matrix[i][j]+=a.matrix[i][j];
-	}else
-		value+=a.value;
+	*this = *this+a;
 	return *this;
 }
 
 Tensor& Tensor::operator -=(const Tensor& a)
-{
-	if(ismat!=a.ismat||(ismat&&(n!=a.n||m!=a.m)))
-		throw std::invalid_argument("Error : \""+PrintType()+"-="+a.PrintType()+"\" is not permitted!");
-	if(ismat)
-	{
-		for(int i=0;i<n;i++)
-			for(int j=0;j<m;j++)
-				matrix[i][j]-=a.matrix[i][j];
-	}else
-		value-=a.value;
+{	
+	*this = *this - a;
 	return *this;
 }
 
@@ -161,19 +145,74 @@ std::string Tensor::Print(int cnt)const
 
 Tensor operator +(const Tensor& a,const Tensor& b)
 {
-	if(a.ismat!=b.ismat||(a.ismat&&(a.n!=b.n||a.m!=b.m)))
+
+	if(!a.ismat&&!b.ismat){
+		return Tensor(a.value+b.value);
+	}
+	else if(!a.ismat&&b.ismat){
+		Tensor ans(b);
+		for(int i=0;i<b.n;++i)
+			for(int j=0;j<b.m;++j)
+				ans.matrix[i][j]+=a.value;
+		return ans;
+	}
+	else if(a.ismat&&!b.ismat){
+		Tensor ans(a);
+		for(int i=0;i<a.n;++i)
+			for(int j=0;j<a.m;++j)
+				ans.matrix[i][j]+=a.value;
+		return ans;
+	}
+	else if(a.n!=b.n&&a.n!=1&&b.n!=1&&a.m!=b.m&&a.m!=1&&b.m!=1){
 		throw std::invalid_argument("Error : \""+a.PrintType()+"+"+b.PrintType()+"\" is not permitted!");
-	Tensor ans(a);
-	ans+=b;
-	return ans;
+	}
+	else {
+		Tensor ans(std::max(a.n,b.n),std::max(a.m,b.m));
+		for(int i=0;i<ans.n;++i)
+			for(int j=0;j<ans.m;++j)
+				ans.matrix[i][j] = a.matrix[(a.n>1)?i:0][(a.m>1)?j:0]
+								   +b.matrix[(b.n>1)?i:0][(b.m>1)?j:0];
+		return ans;
+	}
 }
 
 Tensor operator -(const Tensor& a,const Tensor& b)
-{
-	if(a.ismat!=b.ismat||(a.ismat&&(a.n!=b.n||a.m!=b.m)))
-		throw std::invalid_argument("Error : \""+a.PrintType()+"-"+b.PrintType()+"\" is not permitted!");
+{	
 	Tensor ans(a);
-	ans-=b;
+	if(!a.ismat&&!b.ismat){
+		return Tensor(a.value-b.value);
+	}
+	else if(a.ismat&&!b.ismat){
+		for(int i=0;i<a.n;++i)
+			for(int j=0;j<a.m;++j)
+				ans.matrix[i][j]-=b.value;
+	}
+	else if(!a.ismat&&b.ismat){
+		throw std::invalid_argument("Error : \""+a.PrintType()+"-"+b.PrintType()+"\" is not permitted!");
+	}
+	else if(a.n==b.n&&a.m==b.m){
+		for(int i=0;i<ans.n;++i)
+			for(int j=0;j<ans.m;++j)
+				ans.matrix[i][j]-=b.matrix[i][j];
+	}
+	else if(b.n==1||b.m==1){
+		for(int i=0;i<ans.n;++i)
+			for(int j=0;j<ans.m;++j)
+				ans.matrix[i][j]-=b.matrix[(b.n>1)?i:0][(b.m>1)?j:0];
+	}
+	else if(a.n==1&&a.m==b.m){
+		for(int i=0;i<b.n;++i)
+			for(int j=0;j<ans.m;++j)
+				ans.matrix[0][j]-= b.matrix[i][j]/b.n;
+	}
+	else if(a.m==1&&a.n==b.n){
+		for(int i=0;i<ans.n;++i)
+			for(int j=0;j<b.m;++j)
+				ans.matrix[i][0]-= b.matrix[i][j]/b.m;
+	}
+	else {
+		throw std::invalid_argument("Error : \""+a.PrintType()+"-"+b.PrintType()+"\" is not permitted!");
+	}
 	return ans;
 }
 Tensor operator *(const Tensor& a,const Tensor& b)
@@ -348,4 +387,63 @@ void swap(Tensor& a,Tensor& b)
 	Tensor c=std::move(a);
 	a=std::move(b);
 	b=std::move(c);
+}
+
+Tensor dmul(const Tensor & a, const Tensor & b)
+{
+	if(a.ismat!=b.ismat)
+		throw std::invalid_argument("Error : \""+a.PrintType()+"*"+b.PrintType()+"\" is not permitted!");
+	if(!a.ismat)
+	{
+		Tensor ans(a);
+		ans*=b;
+		return ans;
+	}
+
+	if(a.m!=b.m || a.n != b.n)
+		throw std::invalid_argument("Error : \""+a.PrintType()+"*"+b.PrintType()+"\" is not permitted!");
+
+	Tensor ans(a.n, a.m);
+	for(int i=0;i<a.n;i++)
+		for(int j=0;j<a.m;j++)
+			ans.matrix[i][j] = a.matrix[i][j] * b.matrix[i][j];
+	return ans;
+}
+
+Tensor concat(const Tensor& a, const Tensor& b, int concat_dim){
+	if(!a.ismat||!b.ismat)
+		throw std::invalid_argument("Error: try to concat "+a.PrintType()+"and"+b.PrintType());
+	if(concat_dim==0){
+		if(a.m!=b.m)
+			throw std::invalid_argument("Error: try to concat "+a.PrintType()+"and"+b.PrintType());
+		Tensor ans(a.n+b.n,a.m);
+		for(int i=0;i<a.n;++i)
+			for(int j=0;j<a.m;++j)
+				ans.matrix[i][j]=a.matrix[i][j];
+		for(int i=0;i<b.n;++i)
+			for(int j=0;j<b.m;++j)
+				ans.matrix[i+a.n][j]=b.matrix[i][j];
+		return ans;
+	}
+
+	if(concat_dim==1){
+		if(a.n!=b.n)
+			throw std::invalid_argument("Error: try to concat "+a.PrintType()+"and"+b.PrintType());
+		Tensor ans(a.n,a.m+b.m);
+		for(int i=0;i<a.n;++i){
+			for(int j=0;j<a.m;++j)
+				ans.matrix[i][j] = a.matrix[i][j];
+			for(int j=0;j<b.m;++j)
+				ans.matrix[i][j+a.m] = b.matrix[i][j];
+		}
+		return ans;
+	}
+}
+
+Tensor slice(Tensor& a, std::vector<int> begin, std::vector<int> size){
+	Tensor ans((size[0]!=-1?size[0]:a.n-begin[0]),(size[1]!=-1)?size[1]:a.m-begin[1]);
+	for(int i=0;i<ans.n;++i)
+		for(int j=0;j<ans.m;++j)
+			ans.matrix[i][j]=a.matrix[i+begin[0]][j+begin[1]];
+	return ans;
 }

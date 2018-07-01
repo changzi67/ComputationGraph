@@ -34,32 +34,32 @@ void Variable::Set(const Tensor& t)
 void Variable::Add(const Tensor& t)
 {
 	Tensor * va = sess -> get_value(this);
-	if(t.Type()!=va->Type()||(t.Type()&&(t.N()!=va->N()||t.M()!=va->M())))
-		throw std::invalid_argument("Error : Try to Add a variable(" +va->PrintType()+") with Tensor("+t.PrintType()+")!");
+//	if(t.Type()!=va->Type()||(t.Type()&&(t.N()!=va->N()||t.M()!=va->M())))
+//		throw std::invalid_argument("Error : Try to Add a variable(" +va->PrintType()+") with Tensor("+t.PrintType()+")!");
 	sess -> set(this, new Tensor(*va + t));
 }
 
 void Variable::Sub(const Tensor& t)
 {
 	Tensor * va = sess -> get_value(this);
-	if(t.Type()!=va->Type()||(t.Type()&&(t.N()!=va->N()||t.M()!=va->M())))
-		throw std::invalid_argument("Error : Try to Add a variable(" +va->PrintType()+") with Tensor("+t.PrintType()+")!");
+//	if(t.Type()!=va->Type()||(t.Type()&&(t.N()!=va->N()||t.M()!=va->M())))
+//		throw std::invalid_argument("Error : Try to Add a variable(" +va->PrintType()+") with Tensor("+t.PrintType()+")!");
 	sess -> set(this, new Tensor(*va - t));
 }
 
 void Variable::Mul(const Tensor& t)
 {
 	Tensor * va = sess -> get_value(this);
-	if(t.Type()!=va->Type()||(t.Type()&&(t.N()!=va->N()||t.M()!=va->M())))
-		throw std::invalid_argument("Error : Try to Add a variable(" +va->PrintType()+") with Tensor("+t.PrintType()+")!");
+//	if(t.Type()!=va->Type()||(t.Type()&&(t.N()!=va->N()||t.M()!=va->M())))
+//		throw std::invalid_argument("Error : Try to Add a variable(" +va->PrintType()+") with Tensor("+t.PrintType()+")!");
 	sess -> set(this, new Tensor(*va * t));
 }
 
 void Variable::Div(const Tensor &t)
 {
 	Tensor * va = sess -> get_value(this);
-	if(t.Type()!=va->Type()||(t.Type()&&(t.N()!=va->N()||t.M()!=va->M())))
-		throw std::invalid_argument("Error : Try to Add a variable(" +va->PrintType()+") with Tensor("+t.PrintType()+")!");
+//	if(t.Type()!=va->Type()||(t.Type()&&(t.N()!=va->N()||t.M()!=va->M())))
+//		throw std::invalid_argument("Error : Try to Add a variable(" +va->PrintType()+") with Tensor("+t.PrintType()+")!");
 	sess -> set(this, new Tensor(*va / t));
 }
 

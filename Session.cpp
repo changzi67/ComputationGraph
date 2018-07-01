@@ -57,6 +57,7 @@ void Session::Save(std::string path) {
 }
 
 void Session::Restore(std::string path) {
+    //data.clear();
     std::ifstream fin(path, std::ios::binary);
     Variable* v = nullptr;
     Tensor* t = nullptr;

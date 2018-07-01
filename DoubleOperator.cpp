@@ -4,7 +4,7 @@
 
 void Add::Judge(const Tensor& A,const Tensor& B)const
 {
-	if(A.Type()!=B.Type()||(A.Type()&&(A.N()!=B.N()||A.M()!=B.M())))
+	if(A.Type()!=B.Type()||(A.Type()&&B.Type()&&(A.N()!=B.N()&&A.N()!=1&&B.N()!=1)||(A.M()!=B.M()&&A.M()!=1&&B.M()!=1)))
 		throw std::invalid_argument("Error : Add node \""+name+"\" try to get value from "+a->Name()+"("+A.PrintType()+") and "+b->Name()+"("+B.PrintType()+") !");
 }
 
@@ -14,7 +14,7 @@ Tensor Add::eval(std::map<std::string,Tensor>& Inputs, Session& sess)
 	{
 		Tensor A=a->eval(Inputs, sess);
 		Tensor B=b->eval(Inputs, sess);
-		Judge(A,B);
+		//Judge(A,B);
 		value=new Tensor(A+B);
 		if(debug)
 		{
@@ -68,7 +68,7 @@ Tensor Sub::eval(std::map<std::string,Tensor>& Inputs, Session& sess)
 	{
 		Tensor A=a->eval(Inputs, sess);
 		Tensor B=b->eval(Inputs, sess);
-		Judge(A,B);
+		//Judge(A,B);
 		value=new Tensor(A-B);
 		if(debug)
 		{
@@ -93,10 +93,10 @@ void Sub::Release()
 //Mul
 void Mul::grad(std::map<Node*, std::multiset<Node*>>& grads, Node& t)
 {
-    grads[a].insert(&(t * (*b)));
-	grads[b].insert(&((*a) * t));
-	a->grad(grads, t * (*b));
-	b->grad(grads, (*a) * t);
+    grads[a].insert(&(t * *(new Transpose(*b))));
+	grads[b].insert(&(*(new Transpose(*a)) * t));
+	a->grad(grads, t * *(new Transpose(*b)));
+	b->grad(grads, *(new Transpose(*a)) * t);
 }
 
 void Mul::Judge(const Tensor& A,const Tensor& B) 
@@ -132,6 +132,7 @@ void Mul::Release()
 		value=nullptr;
 	}
 }
+
 //Div
 
 void Div::grad(std::map<Node *, std::multiset<Node *>> & grads, Node & t) {
@@ -282,7 +283,7 @@ void LessEq::Release()
 }
 
 Tensor Assign::eval (std::map<std::string, Tensor> & Inputs, Session& sess) {
-	if(value!=nullptr){
+	if(value==nullptr){
 		Tensor B=b->eval(Inputs, sess);
 		value=new Tensor(B);
 	}
@@ -326,4 +327,24 @@ void Bind::Release() {
 void Bind::grad(std::map<Node *, std::multiset<Node *>> & grads, Node & t) {
 	grads[a].insert(&t);
 	a->grad(grads, t);
+}
+
+Tensor Dmul::eval(std::map<std::string, Tensor> &Inputs, Session &sess) {
+	if(value==nullptr)
+	{
+		Tensor A=a->eval(Inputs, sess);
+		Tensor B=b->eval(Inputs, sess);
+		value = new Tensor(dmul(A, B));
+	}
+	return *value;
+}
+
+void Dmul::Release() {
+	a->Release();
+	b->Release();
+	if(value!=nullptr)
+	{
+		delete value;
+		value=nullptr;
+	}
 }

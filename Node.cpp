@@ -19,6 +19,7 @@ std::string Node::PrintRely()
 Gra& Node::Grad()
 {
     std::map<Node*, std::multiset<Node*>> grads;
+    grads.clear();
 	grad(grads, *(new Constant(1)));
 
 	std::map<Node*, std::multiset<Node*>>::iterator it;

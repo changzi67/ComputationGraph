@@ -42,12 +42,29 @@ Tensor* Sigmoid::calc(const Tensor& A)
 	return tmp;
 }
 
+Tensor* Ln::calc(const Tensor &A) {
+	if (A < 0) throw std::domain_error("Error :  log operator's input must be positive.");
+	return new Tensor(ln(A));
+}
+
+Tensor* Sig_grad::calc(const Tensor &A) {
+	Tensor *tmp = new Tensor(A);
+	tmp->sig_grad();
+	return tmp;
+}
+
+// ！这里的内部实现做了改动，因为在后续求导过程中为了多态，需要标量也能transpose
+// 改成了标量也可绑定transpose节点，值是自身
 Tensor* Transpose::calc(const Tensor& A)
 {
-	if(!A.Type())
-		throw std::invalid_argument("Error : Transpose node \""+name+"\" try to get value from "+a->Name()+"("+A.PrintType()+") !");
-	Tensor *tmp=new Tensor(A.M(),A.N());
-	tmp->Transpose(A);
+    Tensor *tmp = nullptr;
+	if(!A.Type()) {
+        tmp=new Tensor(A);
+	}
+	else {
+	    tmp=new Tensor(A.M(),A.N());
+        tmp->Transpose(A);
+	}
 	return tmp;
 }
 
@@ -78,7 +95,20 @@ void Cos::grad(std::map<Node *, std::multiset<Node *>> & grads, Node & t) {
 }
 
 void Exp::grad(std::map<Node *, std::multiset<Node *>> & grads, Node & t) {
-	Node * temp = new Exp(*a);
+	Node *temp = new Exp(*a);
 	grads[a].insert(&(t * *temp));
 	a->grad(grads, t * *temp);
+}
+
+void Sigmoid::grad(std::map<Node *, std::multiset<Node *>> & grads, Node & t) {
+	Node * temp = new Sig_grad(*a);
+	Node * ans = new Dmul(*temp, t);
+	grads[a].insert(ans);
+	a->grad(grads, *ans);
+}
+
+void Quadratic::grad(std::map<Node *, std::multiset<Node *>> & grads, Node & t) {
+	Node * temp = new Constant(2);
+	grads[a].insert(&(t * (*temp * *a)));
+	a->grad(grads, t * (*temp * *a));
 }

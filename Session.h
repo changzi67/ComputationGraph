@@ -11,7 +11,7 @@ private:
     std::string name;
     std::map<Variable*, Tensor*> data;
 public:
-    Session(const std::string& _nm="") : name(_nm) {}
+    Session(const std::string& _nm="") : name(_nm) {data.clear();}
     Tensor* get_value(Variable*);
     void ins(Variable*, Tensor*);
 

@@ -32,7 +32,7 @@ public:
 	Gra (Node& _a, std::map<Node*, Node*>& _grads) : SingleOperator("", _a), grads(_grads) {}
 	Node& operator[] (Node& graded);
     std::string Expr() override {
-        std::cerr << "hhhhhhh";
+        //std::cerr << "hhhhhhh";
         return "The Grad is " + a->Expr();
     }
 };
@@ -54,7 +54,7 @@ public:
 class Ln:public SingleOperator
 {
 private:
-	Tensor* calc(const Tensor& A) { return new Tensor(ln(A)); }
+	Tensor* calc(const Tensor& A) override ;
 public:
 
 	void grad(std::map<Node*, std::multiset<Node*>>&, Node&) override;
@@ -154,7 +154,8 @@ private:
 	Tensor* calc(const Tensor& A);
 public:
 	Quadratic(Node &_a,const std::string& _nm=""):SingleOperator(_nm,_a){}
-	
+
+	void grad(std::map<Node*, std::multiset<Node*>>&, Node&) override;
 	std::string Expr()
 	{
 		return "Quadratic_Cost("+a->Expr()+")";
@@ -167,7 +168,8 @@ private:
 	Tensor* calc(const Tensor& A);
 public:
 	Sigmoid(Node &_a,const std::string& _nm=""):SingleOperator(_nm,_a){}
-	
+
+	void grad(std::map<Node*, std::multiset<Node*>>&, Node&) override;
 	std::string Expr()
 	{
 		return "Sigmoid("+a->Expr()+")";
@@ -184,6 +186,19 @@ public:
 	std::string Expr()
 	{
 		return "("+a->Expr()+")^T";
+	}
+};
+
+class Sig_grad : public SingleOperator
+{
+private:
+	Tensor* calc(const Tensor& A);
+public:
+	Sig_grad(Node &_a,const std::string& _nm=""):SingleOperator(_nm,_a){}
+
+	std::string Expr() override
+	{
+		return "Sig_grad("+a->Expr()+")";
 	}
 };
 

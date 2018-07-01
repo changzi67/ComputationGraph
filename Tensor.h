@@ -54,7 +54,7 @@ public:
 	{
 		for(int i=0;i<n;i++)
 			for(int j=0;j<m;j++)
-				matrix[i][j]=(*rand)();
+				matrix[i][j]=((*rand)() / double(RAND_MAX) - 0.5)/100; // 这里修改了！
 	}
 	
 	Tensor& operator =(const Tensor& a); 
@@ -134,7 +134,32 @@ public:
 		}else 
 			value=1/(1+exp(-value));
 	}
-	void Transpose(const Tensor& t)
+	void sig_grad ()
+    {
+        if(ismat)
+        {
+            for(int i=0;i<n;i++)
+                for(int j=0;j<m;j++)
+                    matrix[i][j] = exp(-matrix[i][j]) /((1+exp(-matrix[i][j]))*(1+exp(-matrix[i][j])));
+        }else
+            value = exp(-value) / ((1+exp(-value)) * (1+exp(-value)));
+    }
+
+    int Max () {
+        if (!ismat || n != 1)
+            throw std::runtime_error(" Error : Try to get max_value from wrong dimension matrix.");
+
+        double tmp = matrix[0][0];
+        int index = 0;
+        for (int i = 1; i < m; i++) {
+            if (matrix[0][i] > tmp) {
+                tmp = matrix[0][i];
+                index = i;
+            }
+        }
+        return index;
+    }
+    void Transpose(const Tensor& t)
 	{
 		for(int i=0;i<n;i++)
 			for(int j=0;j<m;j++)
@@ -154,7 +179,11 @@ public:
 	friend Tensor atan(const Tensor&);
 	friend Tensor pow(const Tensor&,const Tensor&);
 	friend Tensor pow(const Tensor&,double);
+	friend Tensor dmul(const Tensor&, const Tensor&);
 	friend void swap(Tensor&,Tensor&);
+	friend Tensor concat(const Tensor&, const Tensor&, int concat_dim);
+	friend Tensor slice(Tensor&, std::vector<int> begin, std::vector<int> size);
+
 };
 
 #endif
